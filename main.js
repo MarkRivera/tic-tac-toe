@@ -50,35 +50,54 @@ var util_1 = require("./util");
 // Two players, Board, Two Characters, Two win conditions (Diagonal and Straight Line)
 function ticTacToe() {
     return __awaiter(this, void 0, void 0, function () {
-        var generateBoard, isBoardFull, setToken, board, is_board_full, is_winner, current_player, response;
+        var generateBoard, isBoardFull, setToken, checkDiagonalWin, checkHorizontalWin, checkVerticalWin, drawBoard, board, current_player, response;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    generateBoard = Board_1.table.generateBoard, isBoardFull = Board_1.table.isBoardFull, setToken = Board_1.table.setToken;
+                    generateBoard = Board_1.table.generateBoard, isBoardFull = Board_1.table.isBoardFull, setToken = Board_1.table.setToken, checkDiagonalWin = Board_1.table.checkDiagonalWin, checkHorizontalWin = Board_1.table.checkHorizontalWin, checkVerticalWin = Board_1.table.checkVerticalWin, drawBoard = Board_1.table.drawBoard;
                     board = generateBoard();
-                    is_board_full = isBoardFull(board);
-                    is_winner = false;
                     current_player = Player_1.player_one;
                     _a.label = 1;
                 case 1:
-                    if (!(!is_board_full && !is_winner)) return [3 /*break*/, 3];
+                    if (!true) return [3 /*break*/, 3];
                     // See available moves
                     Board_1.table.seeAvailableMoves(board);
                     return [4 /*yield*/, (0, util_1.get_player_input)()];
                 case 2:
                     response = _a.sent();
-                    // If the player's choice isn't correct, then 
+                    // If the player's choice isn't valid, then restart the loop
+                    if (!(0, Player_1.isPlayerChoice)(response)) {
+                        console.log("Please select a number between 0 - 8 that is available \n");
+                        return [3 /*break*/, 1];
+                    }
                     // Place the Player's Token onto the board and if its not available select another space
                     try {
                         setToken(board, response, current_player.token);
                     }
                     catch (error) {
-                        console.log("Cannot take that spot, please select an empty place");
+                        console.log("Cannot take that spot, please select an empty place \n");
                         return [3 /*break*/, 1];
                     }
-                    console.log(board);
-                    return [3 /*break*/, 3];
-                case 3: return [2 /*return*/];
+                    // Draw Board
+                    drawBoard(board);
+                    // Check for Winner
+                    if (checkDiagonalWin(board) ||
+                        checkHorizontalWin(board) ||
+                        checkVerticalWin(board)) {
+                        console.log("Congrats, ", current_player.name);
+                        return [3 /*break*/, 3];
+                    }
+                    // Check for Draw
+                    if (isBoardFull(board)) {
+                        console.log("Draw!");
+                        return [3 /*break*/, 3];
+                    }
+                    // Switch Players and Restart the loop
+                    current_player = current_player === Player_1.player_one ? Player_1.player_two : Player_1.player_one;
+                    return [3 /*break*/, 1];
+                case 3:
+                    util_1.rl.close();
+                    return [2 /*return*/];
             }
         });
     });

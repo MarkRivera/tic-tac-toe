@@ -7,6 +7,7 @@ type Key = {
 
 export type Table = {
   generateBoard: () => Board;
+  drawBoard: (board: Board) => void;
   checkDiagonalWin: (board: Board) => boolean;
   checkHorizontalWin: (board: Board) => boolean;
   checkVerticalWin: (board: Board) => boolean;
@@ -15,10 +16,104 @@ export type Table = {
   setToken: (board: Board, input: string, token: Token) => void;
 };
 
-function checkDiagonalWin(board: Board) { return true }
-function checkHorizontalWin(board: Board) { return true }
-function checkVerticalWin(board: Board) { return true }
-function isBoardFull(board: Board) { return false }
+function generateCountObject() {
+  return {
+    "X": 0,
+    "O": 0
+  }
+}
+function checkDiagonalWin(board: Board) {
+  let count = generateCountObject();
+
+  // Check Left Diagonal
+  for (let i = 0; i < board.length; i++) {
+    if (board[i][i] === "O") {
+      count["O"]++
+    }
+
+    if (board[i][i] === "X") {
+      count["X"]++
+    }
+  }
+
+  // If either Os or Xs are equal to 3, return true
+  if (count["O"] === 3 || count["X"] === 3) {
+    return true
+  }
+
+  // Reset count object
+  count = generateCountObject();
+
+  // Check the right diagonal
+  for (let i = 0; i < board.length; i++) {
+    const right = board.length - 1 - i;
+    if (board[i][right] === "O") {
+      count["O"]++
+    }
+
+    if (board[i][right] === "X") {
+      count["X"]++
+    }
+  }
+
+  // If O or X have three, return true
+  if (count["O"] === 3 || count["X"] === 3) {
+    return true
+  }
+
+  return false;
+};
+function checkHorizontalWin(board: Board) {
+  for (let i = 0; i < board.length; i++) {
+    const row = board[i];
+    const count = generateCountObject();
+
+    for (let col = 0; col < row.length; col++) {
+      if (row[col] === "O") {
+        count["O"]++
+      }
+
+      if (row[col] === "X") {
+        count["X"]++
+      }
+    }
+
+    if (count["O"] === 3) return true
+    if (count["X"] === 3) return true
+  }
+
+  return false
+}
+function checkVerticalWin(board: Board) {
+  for (let i = 0; i < board.length; i++) {
+    const count = generateCountObject();
+
+    for (let row = 0; row < board.length; row++) {
+      if (board[row][i] === "O") {
+        count["O"]++
+      }
+
+      if (board[row][i] === "X") {
+        count["X"]++
+      }
+    }
+
+    if (count["O"] === 3) return true
+    if (count["X"] === 3) return true
+  }
+
+  return false
+}
+function isBoardFull(board: Board) {
+  for (let i = 0; i < board.length; i++) {
+    const row = board[i];
+    for (let j = 0; j < row.length; j++) {
+      if (row[j] === null) return false
+    }
+  }
+
+  return true;
+}
 function setToken(board: Board, input: string, token: Token) {
   const key: Key = {
     "0": [0, 0],
@@ -40,7 +135,6 @@ function setToken(board: Board, input: string, token: Token) {
     board[selected_spot[0]][selected_spot[1]] = token;
   } else throw new Error("Space is already taken")
 }
-
 function seeAvailableMoves(board: Board) {
   const rows: string[] = [];
   let summand = 0;
@@ -60,8 +154,34 @@ function seeAvailableMoves(board: Board) {
     rows.push(result);
     summand += 3;
   }
-  console.log(rows.join("\n"));
+  console.log(rows.join("\n") + "\n");
 }
+function drawBoard(board: Board) {
+  for (let rowIndex = 0; rowIndex < board.length; rowIndex++) {
+    const row = board[rowIndex];
+
+    let result = "";
+    for (let col = 0; col < row.length; col++) {
+      const char = board[rowIndex][col];
+
+      if (col !== row.length - 1) {
+        char ?
+          result = result.concat(" ", char, " |") : result = result.concat("  ", " |");
+      } else {
+        char ?
+          result = result.concat(" ", char) : result = result.concat(" ");
+      }
+
+    }
+
+    console.log(result);
+    if (rowIndex !== 2) {
+      console.log("-----------");
+    }
+
+  }
+};
+
 
 
 function generateBoard(): Board {
@@ -79,7 +199,8 @@ const table: Table = {
   checkVerticalWin,
   isBoardFull,
   seeAvailableMoves,
-  setToken
+  setToken,
+  drawBoard
 }
 
 export { table };

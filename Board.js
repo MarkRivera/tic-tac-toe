@@ -1,10 +1,93 @@
 "use strict";
 exports.__esModule = true;
 exports.table = void 0;
-function checkDiagonalWin(board) { return true; }
-function checkHorizontalWin(board) { return true; }
-function checkVerticalWin(board) { return true; }
-function isBoardFull(board) { return false; }
+function generateCountObject() {
+    return {
+        "X": 0,
+        "O": 0
+    };
+}
+function checkDiagonalWin(board) {
+    var count = generateCountObject();
+    // Check Left Diagonal
+    for (var i = 0; i < board.length; i++) {
+        if (board[i][i] === "O") {
+            count["O"]++;
+        }
+        if (board[i][i] === "X") {
+            count["X"]++;
+        }
+    }
+    // If either Os or Xs are equal to 3, return true
+    if (count["O"] === 3 || count["X"] === 3) {
+        return true;
+    }
+    // Reset count object
+    count = generateCountObject();
+    // Check the right diagonal
+    for (var i = 0; i < board.length; i++) {
+        var right = board.length - 1 - i;
+        if (board[i][right] === "O") {
+            count["O"]++;
+        }
+        if (board[i][right] === "X") {
+            count["X"]++;
+        }
+    }
+    // If O or X have three, return true
+    if (count["O"] === 3 || count["X"] === 3) {
+        return true;
+    }
+    return false;
+}
+;
+function checkHorizontalWin(board) {
+    for (var i = 0; i < board.length; i++) {
+        var row = board[i];
+        var count = generateCountObject();
+        for (var col = 0; col < row.length; col++) {
+            if (row[col] === "O") {
+                count["O"]++;
+            }
+            if (row[col] === "X") {
+                count["X"]++;
+            }
+        }
+        if (count["O"] === 3)
+            return true;
+        if (count["X"] === 3)
+            return true;
+    }
+    return false;
+}
+function checkVerticalWin(board) {
+    for (var i = 0; i < board.length; i++) {
+        var count = generateCountObject();
+        for (var row = 0; row < board.length; row++) {
+            if (board[row][i] === "O") {
+                count["O"]++;
+            }
+            if (board[row][i] === "X") {
+                count["X"]++;
+            }
+        }
+        if (count["O"] === 3)
+            return true;
+        if (count["X"] === 3)
+            return true;
+    }
+    return false;
+}
+function isBoardFull(board) {
+    for (var i = 0; i < board.length; i++) {
+        var row = board[i];
+        for (var j = 0; j < row.length; j++) {
+            if (row[j] === null)
+                return false;
+        }
+    }
+    return true;
+}
 function setToken(board, input, token) {
     var key = {
         "0": [0, 0],
@@ -42,8 +125,33 @@ function seeAvailableMoves(board) {
         rows.push(result);
         summand += 3;
     }
-    console.log(rows.join("\n"));
+    console.log(rows.join("\n") + "\n");
 }
+function drawBoard(board) {
+    for (var rowIndex = 0; rowIndex < board.length; rowIndex++) {
+        var row = board[rowIndex];
+        //  X |  | X 
+        // ___  __ __
+        //  X |
+        var result = "";
+        for (var col = 0; col < row.length; col++) {
+            var char = board[rowIndex][col];
+            if (col !== row.length - 1) {
+                char ?
+                    result = result.concat(" ", char, " |") : result = result.concat("  ", " |");
+            }
+            else {
+                char ?
+                    result = result.concat(" ", char) : result = result.concat(" ");
+            }
+        }
+        console.log(result);
+        if (rowIndex !== 2) {
+            console.log("-----------");
+        }
+    }
+}
+;
 function generateBoard() {
     return [
         [null, null, null],
@@ -58,6 +166,7 @@ var table = {
     checkVerticalWin: checkVerticalWin,
     isBoardFull: isBoardFull,
     seeAvailableMoves: seeAvailableMoves,
-    setToken: setToken
+    setToken: setToken,
+    drawBoard: drawBoard
 };
 exports.table = table;
